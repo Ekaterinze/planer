@@ -44,8 +44,13 @@ jobs:
         run: |
           echo "JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64" >> $GITHUB_ENV
           echo "/usr/lib/jvm/temurin-17-jdk-amd64/bin" >> $GITHUB_PATH
+
+      - name: Accept Android Licenses
+        run: |
+          mkdir -p $HOME/.android
+          echo -e "\n" | sdkmanager --licenses || true
       
-      # Сборка универсального APK (32 + 64 бит)
+      # Сборка универсального APK (64 бит)
       - name: Build APK
         run: |
           # Проверка: должна быть Java 17
