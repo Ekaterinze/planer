@@ -39,31 +39,46 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildozer-
       
-      # Устанавливаем Java 17 как основную (для следующих шагов)
       - name: Set Java 17 as default
         run: |
           echo "JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64" >> $GITHUB_ENV
           echo "/usr/lib/jvm/temurin-17-jdk-amd64/bin" >> $GITHUB_PATH
 
+      # --- Установка Android SDK и build-tools ---
+      - name: Install Android SDK
+        run: |
+          SDK_DIR=~/.buildozer/android/platform/android-sdk
+          mkdir -p $SDK_DIR
+          cd $SDK_DIR
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          unzip -q commandlinetools-linux-11076708_latest.zip
+          rm commandlinetools-linux-11076708_latest.zip
+          # Создаём структуру cmdline-tools/latest
+          mkdir -p cmdline-tools
+          mv cmdline-tools cmdline-tools/latest
+          export ANDROID_SDK_ROOT=$SDK_DIR
+          echo "ANDROID_SDK_ROOT=$SDK_DIR" >> $GITHUB_ENV
+          echo "$SDK_DIR/cmdline-tools/latest/bin" >> $GITHUB_PATH
+      
       - name: Accept Android Licenses
         run: |
-          mkdir -p $HOME/.android
-          echo -e "\n" | sdkmanager --licenses || true
+          yes | sdkmanager --licenses
       
-      # Сборка универсального APK (64 бит)
+      - name: Install required build-tools
+        run: |
+          sdkmanager "build-tools;37.0.0-rc2" "platforms;android-37"
+      # ---------------------------------------------
+      
       - name: Build APK
         run: |
-          # Проверка: должна быть Java 17
           echo "=== Java version ==="
           java -version
-          echo "=== JAVA_HOME ==="
-          echo $JAVA_HOME
+          echo "=== ANDROID_SDK_ROOT ==="
+          echo $ANDROID_SDK_ROOT
           echo "=== Buildozer version ==="
           buildozer --version
           
-          # Запуск сборки
           buildozer android debug
-
           mv bin/*.apk bin/planer-debug.apk 2>/dev/null || true
       
       - name: Upload Universal APK
@@ -73,7 +88,6 @@ jobs:
           path: bin/planer-debug.apk
           if-no-files-found: error
 
-      # Рилиз:
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
