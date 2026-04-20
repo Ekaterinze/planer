@@ -51,7 +51,7 @@ MDScreen:
                         multiline: True
                         size_hint_x: 1 
                         size_hint_y: 1 
-                        on_text: app.check_daily_delete_button_visibility()
+                        on_text: app.check_daily_delete_save_buttons_visibility()
                         line_color_focus: app.dark_green 
                         hint_text_color_focus: app.dark_green
                         text_color_focus: app.dark_green
@@ -66,6 +66,16 @@ MDScreen:
                         size_hint_x: None
                         width: dp(80) 
                         on_release: app.delete_daily_note()
+
+                    MDRectangleFlatButton:
+                        id: btn_save_daily
+                        text: "Сохранить"
+                        theme_text_color: "Custom"
+                        text_color: app.dark_green
+                        line_color: app.dark_green
+                        size_hint_x: None
+                        width: dp(80) 
+                        on_release: app.save_daily_note()
 
         MDBottomNavigationItem:
             name: 'screen_period'
@@ -165,7 +175,7 @@ MDScreen:
                                     multiline: True
                                     size_hint_x: 1
                                     size_hint_y: 1
-                                    on_text: app.check_monthly_delete_button_visibility()
+                                    on_text: app.check_monthly_delete_save_buttons_visibility()
                                     line_color_focus: app.dark_green 
                                     hint_text_color_focus: app.dark_green
                                     text_color_focus: app.dark_green
@@ -180,6 +190,16 @@ MDScreen:
                                     size_hint_x: None
                                     width: dp(80)
                                     on_release: app.delete_monthly_note()
+
+                                MDRectangleFlatButton:
+                                    id: btn_save_monthly
+                                    text: "Сохранить"
+                                    theme_text_color: "Custom"
+                                    text_color: app.dark_green
+                                    line_color: app.dark_green
+                                    size_hint_x: None
+                                    width: dp(80) 
+                                    on_release: app.save_month_note()
 
                     MDScreen:
                         name: "year_screen"
@@ -225,8 +245,8 @@ class PlanerApp(MDApp):
         self.switch_tab("month_screen")
         self.update_month_header()
         self.load_monthly_note()
-        self.check_daily_delete_button_visibility()
-        self.check_monthly_delete_button_visibility()
+        self.check_daily_delete_save_buttons_visibility()
+        self.check_monthly_delete_save_buttons_visibility()
     
     
     def update_month_header(self):
@@ -280,17 +300,25 @@ class PlanerApp(MDApp):
         if self.selected_date:
             note = self.db.get_daily_note(self.selected_date)
             self.root.ids.daily_note_field.text = note
-            self.check_daily_delete_button_visibility()
+            self.check_daily_delete_save_buttons_visibility()
     
     def save_daily_note(self):
         if self.selected_date:
             note = self.root.ids.daily_note_field.text
             self.db.save_daily_note(self.selected_date, note)
 
-    def check_daily_delete_button_visibility(self):
+    def check_daily_delete_save_buttons_visibility(self):
         """Скрывает кнопку, если поле ежедневной заметки пустое"""
         note_text = self.root.ids.daily_note_field.text
         btn = self.root.ids.btn_delete_daily
+        # Если текст пустой или состоит только из пробелов - скрываем
+        if not note_text.strip():
+            btn.opacity = 0
+            btn.disabled = True
+        else:
+            btn.opacity = 1
+            btn.disabled = False
+        btn = self.root.ids.btn_save_daily
         # Если текст пустой или состоит только из пробелов - скрываем
         if not note_text.strip():
             btn.opacity = 0
@@ -303,14 +331,14 @@ class PlanerApp(MDApp):
         if self.selected_date:
             self.root.ids.daily_note_field.text = ""
             self.db.save_daily_note(self.selected_date, "")
-            self.check_daily_delete_button_visibility()
+            self.check_daily_delete_save_buttons_visibility()
     
     def load_monthly_note(self):
         if self.current_month_year:
             year, month = self.current_month_year
             note = self.db.get_monthly_note(year, month)
             self.root.ids.monthly_note_field.text = note
-            self.check_monthly_delete_button_visibility()
+            self.check_monthly_delete_save_buttons_visibility()
     
     def save_monthly_note(self):
         if self.current_month_year:
@@ -318,10 +346,17 @@ class PlanerApp(MDApp):
             note = self.root.ids.monthly_note_field.text
             self.db.save_monthly_note(year, month, note)
 
-    def check_monthly_delete_button_visibility(self):
+    def check_monthly_delete_save_buttons_visibility(self):
         """Скрывает кнопку, если поле ежемесячной заметки пустое"""
         note_text = self.root.ids.monthly_note_field.text
         btn = self.root.ids.btn_delete_monthly
+        if not note_text.strip():
+            btn.opacity = 0
+            btn.disabled = True
+        else:
+            btn.opacity = 1
+            btn.disabled = False
+        btn = self.root.ids.btn_save_monthly
         if not note_text.strip():
             btn.opacity = 0
             btn.disabled = True
@@ -334,7 +369,7 @@ class PlanerApp(MDApp):
             year, month = self.current_month_year
             self.root.ids.monthly_note_field.text = ""
             self.db.save_monthly_note(year, month, "")
-            self.check_monthly_delete_button_visibility()
+            self.check_monthly_delete_save_buttons_visibility()
 
 if __name__ == '__main__':
     PlanerApp().run()
