@@ -44,30 +44,55 @@ jobs:
           echo "JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64" >> $GITHUB_ENV
           echo "/usr/lib/jvm/temurin-17-jdk-amd64/bin" >> $GITHUB_PATH
 
-      # --- Установка Android SDK и build-tools ---
       - name: Install Android SDK
         run: |
           SDK_DIR=~/.buildozer/android/platform/android-sdk
-          mkdir -p $SDK_DIR
-          cd $SDK_DIR
+          
+          # 1. Создаем целевую структуру до конца
+          mkdir -p $SDK_DIR/cmdline-tools/latest
+          
+          # 2. Скачиваем во временную папку
+          cd /tmp
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          
+          # 3. Распаковываем
           unzip -q commandlinetools-linux-11076708_latest.zip
           rm commandlinetools-linux-11076708_latest.zip
-          # Создаём структуру cmdline-tools/latest
-          mkdir -p cmdline-tools
-          mv cmdline-tools cmdline-tools/latest
+          
+          # 4. Копируем содержимое распакованной папки в latest
+          # Внутри /tmp/cmdline-tools лежат bin, lib, NOTICE.txt и т.д.
+          # Мы копируем их все внутрь $SDK_DIR/cmdline-tools/latest
+          cp -r /tmp/cmdline-tools/* $SDK_DIR/cmdline-tools/latest/
+          
+          # 5. Очищаем временные файлы
+          rm -rf /tmp/cmdline-tools
+          
+          # 6. Настраиваем переменные окружения
           export ANDROID_SDK_ROOT=$SDK_DIR
           echo "ANDROID_SDK_ROOT=$SDK_DIR" >> $GITHUB_ENV
           echo "$SDK_DIR/cmdline-tools/latest/bin" >> $GITHUB_PATH
-      
+
+      - name: Fix SDK Structure for Buildozer
+        run: |
+          SDK_DIR=~/.buildozer/android/platform/android-sdk
+          
+          # Создаем папку tools/bin (игнорируем ошибку, если уже есть)
+          mkdir -p $SDK_DIR/tools/bin
+          
+          # Создаем символические ссылки с флагом -f (принудительно)
+          ln -sf $SDK_DIR/cmdline-tools/latest/bin/sdkmanager $SDK_DIR/tools/bin/sdkmanager
+          ln -sf $SDK_DIR/cmdline-tools/latest/bin/avdmanager $SDK_DIR/tools/bin/avdmanager
+          
+          # Проверка, что ссылки созданы верно
+          ls -la $SDK_DIR/tools/bin/
+
       - name: Accept Android Licenses
         run: |
           yes | sdkmanager --licenses
       
       - name: Install required build-tools
         run: |
-          sdkmanager "build-tools;37.0.0-rc2" "platforms;android-37"
-      # ---------------------------------------------
+          sdkmanager "platform-tools" "build-tools;33.0.2" "platforms;android-33"
       
       - name: Build APK
         run: |
@@ -78,7 +103,10 @@ jobs:
           echo "=== Buildozer version ==="
           buildozer --version
           
+          # Запускаем сборку
           buildozer android debug
+          
+          # Переименовываем APK для удобства
           mv bin/*.apk bin/planer-debug.apk 2>/dev/null || true
       
       - name: Upload Universal APK
