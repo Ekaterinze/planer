@@ -7,11 +7,11 @@ from kivy.metrics import dp
 from kivy.properties import ObjectProperty
 import calendar
 from datetime import date
-from widgets.variables import dark_green_hex, light_green_hex, dark_hex, light_hex
+from widgets.variables import dark_accent_hex, light_accent_hex, dark_hex, light_hex
 
 light_color = get_color_from_hex(light_hex)
 dark_color = get_color_from_hex(dark_hex)
-light_green_color = get_color_from_hex(light_green_hex)
+light_accent_color = get_color_from_hex(light_accent_hex)
 
 class WeekCalendar(GridLayout):
     callback = ObjectProperty(None)
@@ -116,7 +116,7 @@ class WeekCalendar(GridLayout):
             btn.month = month
             btn.year = year
             if day == day_num:
-                btn.background_color = light_green_color
+                btn.background_color = light_accent_color
             else: btn.background_color = light_color
             day_num += 1
         

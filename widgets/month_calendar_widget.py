@@ -7,11 +7,11 @@ from kivy.metrics import dp
 from kivy.properties import ObjectProperty
 import calendar
 from datetime import date
-from widgets.variables import dark_green_hex, light_green_hex, dark_hex, light_hex
+from widgets.variables import dark_accent_hex, light_accent_hex, dark_hex, light_hex
 
 light_color = get_color_from_hex(light_hex)
 dark_color = get_color_from_hex(dark_hex)
-light_green_color = get_color_from_hex(light_green_hex)
+light_accent_color = get_color_from_hex(light_accent_hex)
 
 class MonthCalendar(GridLayout):
     callback = ObjectProperty(None)
@@ -21,7 +21,7 @@ class MonthCalendar(GridLayout):
         self.cols = 7
         self.rows = 7
         self.spacing = [2, 2]
-        self.size_hint = (1, None)  # Измените с (1, 1) на (1, None)
+        self.size_hint = (1, None)
         self.height = dp(280) 
         self.selected_button = None
         self.md_bg_color = light_color
@@ -87,7 +87,7 @@ class MonthCalendar(GridLayout):
                 btn.month = month
                 btn.year = year
                 if day == day_num:
-                    btn.background_color = light_green_color
+                    btn.background_color = light_accent_color
                 else: btn.background_color = light_color
                 day_num += 1
             else: btn.background_color = light_color

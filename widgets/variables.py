@@ -1,7 +1,7 @@
 from kivy.metrics import dp
 
-dark_green_hex = '#132A13'
-light_green_hex = '#C0C8AE'
+dark_accent_hex = '#132A13'
+light_accent_hex = '#C0C8AE'
 light_hex = '#FAFAFA'
 dark_hex = '#141D14'
 

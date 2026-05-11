@@ -10,7 +10,7 @@ from kivy.core.window import Window
 from kivy.clock import Clock
 from widgets.month_calendar_widget import MonthCalendar
 from widgets.week_calendar_widget import WeekCalendar
-from widgets.variables import dark_green_hex, light_green_hex, dark_hex, light_hex, BORDER_WIDTH, CARD_HEIGHT, RADIUS
+from widgets.variables import dark_accent_hex, light_accent_hex, dark_hex, light_hex, BORDER_WIDTH, CARD_HEIGHT, RADIUS
 from kivymd.uix.card import MDCard
 from kivymd.uix.label import MDLabel
 from kivymd.uix.button import MDIconButton
@@ -34,7 +34,7 @@ MDScreenManager:
             panel_color: app.light
             text_color_normal: app.dark
             text_color_active: app.dark
-            selected_color_background: app.light_green
+            selected_color_background: app.light_accent
 
             MDBottomNavigationItem:
                 name: 'screen_plans'
@@ -80,7 +80,7 @@ MDScreenManager:
                         MDLabel:
                             text: 'Занятия на день'
                             theme_text_color: "Custom"
-                            text_color: app.dark_green
+                            text_color: app.dark_accent
                             bold: True
                         
                         Widget:
@@ -88,7 +88,7 @@ MDScreenManager:
                         MDIconButton:
                             icon: "plus"
                             user_color: app.light
-                            user_md_bg_color: app.dark_green
+                            user_md_bg_color: app.dark_accent
                             size_hint_x: None
                             size: (dp(40), dp(40))
                             on_release: app.show_add_activity_screen()
@@ -111,7 +111,7 @@ MDScreenManager:
                     
                     MDBoxLayout:
                         adaptive_height: True
-                        md_bg_color: app.dark_green
+                        md_bg_color: app.dark_accent
                         padding: dp(5)
                         radius: dp(8)
                         
@@ -161,7 +161,7 @@ MDScreenManager:
                                         text: ""
                                         halign: "center"
                                         size_hint_x: 1
-                                        text_color: app.dark_green 
+                                        text_color: app.dark_accent 
                                     
                                     MDIconButton:
                                         icon: "chevron-right"
@@ -241,7 +241,7 @@ MDScreenManager:
                             MDLabel:
                                 text: "Данные за Год"
                                 halign: "center"
-                                text_color: app.dark_green
+                                text_color: app.dark_accent
 
             MDBottomNavigationItem:
                 name: 'screen_calc'
@@ -250,7 +250,7 @@ MDScreenManager:
                 MDLabel:
                     text: 'Расчет'
                     halign: 'center'
-                    text_color: app.dark_green
+                    text_color: app.dark_accent
 
     MDScreen:
         name: 'add_activity_screen'
@@ -264,7 +264,7 @@ MDScreenManager:
                 title: "Добавление занятия"
                 elevation: 2
                 left_action_items: [["arrow-left", lambda x: app.back_to_plans()]]
-                md_bg_color: app.dark_green
+                md_bg_color: app.dark_accent
                 specific_text_color: app.light
             
             ScrollView:
@@ -281,7 +281,7 @@ MDScreenManager:
                         hint_text: "Название занятия *"
                         required: True
                         mode: "rectangle"
-                        line_color_focus: app.dark_green
+                        line_color_focus: app.dark_accent
 
                     MDBoxLayout:
                         orientation: 'horizontal'
@@ -294,7 +294,7 @@ MDScreenManager:
                             helper_text: "Формат: ЧЧ:ММ"
                             helper_text_mode: "on_focus"
                             mode: "rectangle"
-                            line_color_focus: app.dark_green
+                            line_color_focus: app.dark_accent
                             on_text: app.auto_format_time(self)
                             size_hint_x: 0.5
                             
@@ -304,7 +304,7 @@ MDScreenManager:
                             helper_text: "Формат: ЧЧ:ММ"
                             helper_text_mode: "on_focus"
                             mode: "rectangle"
-                            line_color_focus: app.dark_green
+                            line_color_focus: app.dark_accent
                             on_text: app.auto_format_time(self)
                             size_hint_x: 0.5
                         
@@ -312,27 +312,27 @@ MDScreenManager:
                         id: activity_location
                         hint_text: "Место"
                         mode: "rectangle"
-                        line_color_focus: app.dark_green
+                        line_color_focus: app.dark_accent
                         
                     MDTextField:
                         id: activity_recurrence
                         hint_text: "Регулярность"
                         text: "none"
                         mode: "rectangle"
-                        line_color_focus: app.dark_green
+                        line_color_focus: app.dark_accent
                         
                     MDTextField:
                         id: activity_comment
                         hint_text: "Комментарий"
                         multiline: True
                         mode: "rectangle"
-                        line_color_focus: app.dark_green
+                        line_color_focus: app.dark_accent
                         
                     MDTextField:
                         id: activity_contacts
                         hint_text: "Контакты"
                         mode: "rectangle"
-                        line_color_focus: app.dark_green
+                        line_color_focus: app.dark_accent
                     
                     MDBoxLayout:
                         orientation: 'horizontal'
@@ -343,16 +343,16 @@ MDScreenManager:
                         MDRectangleFlatButton:
                             text: "Выйти"
                             theme_text_color: "Custom"
-                            text_color: app.dark_green
-                            line_color: app.dark_green
+                            text_color: app.dark_accent
+                            line_color: app.dark_accent
                             on_release: app.back_to_plans()
                         
                         MDRectangleFlatButton:
                             text: "Сохранить"
                             theme_text_color: "Custom"
                             text_color: app.light
-                            line_color: app.dark_green
-                            md_bg_color: app.dark_green
+                            line_color: app.dark_accent
+                            md_bg_color: app.dark_accent
                             on_release: app.save_new_activity_fixed()
 '''
 
@@ -378,15 +378,15 @@ class PlanerApp(MDApp):
         return root
     
     def initcolor(self):
-        self.dark_green = get_color_from_hex(dark_green_hex)
-        self.dark_green_semi = (self.dark_green[0], self.dark_green[1], self.dark_green[2], 0.5)
-        self.dark_green_transparent = (self.dark_green[0], self.dark_green[1], self.dark_green[2], 0.3)
-        self.dark_green_dark_light = (self.dark_green[0], self.dark_green[1], self.dark_green[2], 0.1)
+        self.dark_accent = get_color_from_hex(dark_accent_hex)
+        self.dark_accent_semi = (self.dark_accent[0], self.dark_accent[1], self.dark_accent[2], 0.5)
+        self.dark_accent_transparent = (self.dark_accent[0], self.dark_accent[1], self.dark_accent[2], 0.3)
+        self.dark_accent_dark_light = (self.dark_accent[0], self.dark_accent[1], self.dark_accent[2], 0.1)
 
-        self.light_green = get_color_from_hex(light_green_hex)
-        self.light_green_semi = (self.light_green[0], self.light_green[1], self.light_green[2], 0.5)
-        self.light_green_transparent = (self.light_green[0], self.light_green[1], self.light_green[2], 0.3)
-        self.light_green_light_light = (self.light_green[0], self.light_green[1], self.light_green[2], 0.1)
+        self.light_accent = get_color_from_hex(light_accent_hex)
+        self.light_accent_semi = (self.light_accent[0], self.light_accent[1], self.light_accent[2], 0.5)
+        self.light_accent_transparent = (self.light_accent[0], self.light_accent[1], self.light_accent[2], 0.3)
+        self.light_accent_light_light = (self.light_accent[0], self.light_accent[1], self.light_accent[2], 0.1)
 
         self.light = get_color_from_hex(light_hex)
         self.light_semi = (self.light[0], self.light[1], self.light[2], 0.5)
@@ -432,13 +432,13 @@ class PlanerApp(MDApp):
             btn_month.text_color = self.dark
             btn_month.md_bg_color = self.light
             btn_year.text_color = self.light
-            btn_year.md_bg_color = self.dark_green
+            btn_year.md_bg_color = self.dark_accent
 
         else:
             btn_year.text_color = self.dark
             btn_year.md_bg_color = self.light
             btn_month.text_color = self.light
-            btn_month.md_bg_color = self.dark_green
+            btn_month.md_bg_color = self.dark_accent
 
         btn_month.line_color = btn_month.md_bg_color
         btn_year.line_color = btn_year.md_bg_color
@@ -580,8 +580,8 @@ class PlanerApp(MDApp):
         )
         progress = MDProgressBar(
             value = len(completed)*100 //len(sorted_activities),
-            color= self.dark_green,
-            back_color = self.dark_green_dark_light
+            color= self.dark_accent,
+            back_color = self.dark_accent_dark_light
         )
 
         h_content_card.add_widget(label_name)
@@ -620,9 +620,9 @@ class PlanerApp(MDApp):
                     
                     # Определяем цвета в зависимости от статуса
                     if act['_status'] == 'ongoing':
-                        border_color = self.dark_green      # Цвет рамки
+                        border_color = self.dark_accent      # Цвет рамки
                         content_bg = self.light             # Фон контента
-                        text_color = self.dark_green
+                        text_color = self.dark_accent
                         border_width = dp(3) 
                     elif act['_status'] == 'past':
                         border_color = self.dark_semi
@@ -675,7 +675,7 @@ class PlanerApp(MDApp):
 
                     check_btn = MDIconButton(
                         icon="check-all" if act['finished'] else "check",
-                        user_color=self.dark_green,
+                        user_color=self.dark_accent,
                         size_hint=(None, None),
                         size=(dp(btn_size ), dp(btn_size )),
                         pos_hint={'center_x': 0.5, 'center_y': 0.75},
@@ -684,7 +684,7 @@ class PlanerApp(MDApp):
 
                     del_btn = MDIconButton(
                         icon="delete-outline",
-                        user_color=self.dark_green,
+                        user_color=self.dark_accent,
                         size_hint=(None, None),
                         size=(dp(btn_size ), dp(btn_size )),
                         pos_hint={'center_x': 0.5, 'center_y': 0.25},
