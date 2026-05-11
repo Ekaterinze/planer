@@ -7,9 +7,11 @@ from kivy.metrics import dp
 from kivy.properties import ObjectProperty
 import calendar
 from datetime import date
+from widgets.variables import dark_green_hex, light_green_hex, dark_hex, light_hex
 
-dark_green_hex = '#485935'
-light_green_hex = '#CADBB7'
+light_color = get_color_from_hex(light_hex)
+dark_color = get_color_from_hex(dark_hex)
+light_green_color = get_color_from_hex(light_green_hex)
 
 class MonthCalendar(GridLayout):
     callback = ObjectProperty(None)
@@ -19,8 +21,10 @@ class MonthCalendar(GridLayout):
         self.cols = 7
         self.rows = 7
         self.spacing = [2, 2]
-        self.size_hint = (1, 1)
+        self.size_hint = (1, None)  # Измените с (1, 1) на (1, None)
+        self.height = dp(280) 
         self.selected_button = None
+        self.md_bg_color = light_color
         
         # Заголовки дней недели
         weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
@@ -29,7 +33,7 @@ class MonthCalendar(GridLayout):
                 text=day_name,
                 size_hint_y=None,
                 height=dp(30),
-                color=get_color_from_hex(dark_green_hex),
+                color=dark_color,
                 halign='center',
                 valign='middle'
             )
@@ -42,8 +46,8 @@ class MonthCalendar(GridLayout):
             btn = Button(
                 text='',
                 background_normal='',
-                background_color=get_color_from_hex('#FFFFFF'),
-                color=get_color_from_hex(dark_green_hex),
+                background_color=light_color,
+                color=dark_color,
                 size_hint_y=None,
                 height=dp(40),
                 background_down = ''
@@ -57,16 +61,15 @@ class MonthCalendar(GridLayout):
     
     def on_button_press(self, instance):
         if hasattr(instance, 'day') and instance.day:
-            if self.selected_button:
-                self.selected_button.background_color = get_color_from_hex('#FFFFFF')
-            instance.background_color = get_color_from_hex(light_green_hex)
-            self.selected_button = instance
+            self.current_date = date(instance.year, instance.month, instance.day)
+            self.update_calendar()
             if self.callback:
                 self.callback(instance.day, instance.month, instance.year)
     
     def update_calendar(self):
         year = self.current_date.year
         month = self.current_date.month
+        day = self.current_date.day
         
         first_day_weekday, days_in_month = calendar.monthrange(year, month)
         start_offset = first_day_weekday  # 0 = понедельник
@@ -83,10 +86,12 @@ class MonthCalendar(GridLayout):
                 btn.day = day_num
                 btn.month = month
                 btn.year = year
+                if day == day_num:
+                    btn.background_color = light_green_color
+                else: btn.background_color = light_color
                 day_num += 1
-        
-        for btn in self.day_buttons:
-            btn.background_color = get_color_from_hex('#FFFFFF')
+            else: btn.background_color = light_color
+    
     
     def go_prev_month(self):
         year = self.current_date.year
