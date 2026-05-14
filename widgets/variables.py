@@ -8,3 +8,8 @@ dark_hex = '#141D14'
 BORDER_WIDTH = dp(1)  # Толщина рамки в логических пикселях
 CARD_HEIGHT = dp(80)
 RADIUS = dp(8)
+
+HEIGHT_DAY_IN_CALENDAR = dp(40)
+HEIGHT_WEEKDAY_IN_CALENDAR = dp(30)
+
+DOT_SIZE = dp(8)
